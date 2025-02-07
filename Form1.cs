@@ -535,6 +535,116 @@ namespace Naheed_Scrapper_2
                 }
             });
 
+          
+
+
+
+
+            filters.Add(new Filters
+            {
+                dir = "Ghee",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+                    "Frozen Items"
+                },
+                Good = new List<string>
+                {
+                    "Ghee",
+                }
+            });
+
+            filters.Add(new Filters
+            {
+                dir = "Olive Oil",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+
+                    "Oil",
+                    "Personal Care",
+                    "Hair care",
+                    "Skin Care",
+                    "Body Wash",
+                    "Shampoos & Conditioners",
+                    "Gels & Oils",
+                    "hair care",
+                },
+                Good = new List<string>
+                {
+                    "Olive Oil"
+                }
+            });
+            filters.Add(new Filters
+            {
+                dir = "Cooking Oil",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+                    "Olive Oil"
+                },
+                Good = new List<string>
+                {
+                    "Oil",
+                }
+            });
+            filters.Add(new Filters
+            {
+                dir = " Frozen Fries",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+                    "Olive Oil"
+
+                },
+                Good = new List<string>
+                {
+                    "Frozen Fries",
+                    "Opa Fries",
+
+                }
+            });
+
+            filters.Add(new Filters
+            {
+                dir = " Frozen Chicken and Beef",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+                    "Frozen Fries",
+                    "Opa Fries",
+                    "Dry Fruit & Dates",
+                    "Tin Foods",
+                    "Noodles & Pastas",
+                    "pasta",
+                },
+                Good = new List<string>
+                {
+                    "K & N",
+                   "Almasa Smoked",
+                    "Frozen Items",
+                    "B_Big Bird",
+                    "Big Bird",
+                    "Blue Water",
+                    "Chef One",
+                }
+            });
+
 
             // foreach (Filters filter in filters)
             {
@@ -610,8 +720,7 @@ namespace Naheed_Scrapper_2
                 String Unit = product.Variants[0].Option1.Trim();
                 if (Unit.Contains("Default Title"))
                 {
-                    
-                    if (Name.EndsWith(" PC"))
+                   if (Name.EndsWith(" PC"))
                     {
                         Name = Name.Replace(" PC", "");
                         Unit = "Piece";
@@ -669,7 +778,7 @@ namespace Naheed_Scrapper_2
                 Products.Add(new AlfathaProduct()
                 {
                     ProductId = -1,
-                    ProductName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Name.ToLower()),
+                    ProductName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Name.ToLower()).Replace("*", "_"),
                     ImageSource = product.Images[0].Src,
                     Price = Price,
                     Unit = Unit
