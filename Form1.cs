@@ -117,7 +117,7 @@ namespace Naheed_Scrapper_2
             int index = 1;
 
             List<ProductNaheed> products = new List<ProductNaheed>();
-            
+
             int imageCount = 1;
             String outputDir = Application.StartupPath + BaseDir + "\\";
             if (!Directory.Exists(outputDir))
@@ -213,7 +213,7 @@ namespace Naheed_Scrapper_2
         }
         private static async Task<string> DownloadImage(string outputDir, string imageName, string imageUrl, bool upload)
         {
-            RetryImage:
+        RetryImage:
             try
             {
                 imageName = imageName.Replace("/", "");
@@ -222,9 +222,9 @@ namespace Naheed_Scrapper_2
                 string imagePath = Path.Combine(outputDir, imageName);
                 await System.IO.File.WriteAllBytesAsync(imagePath, imageData);
 
-                
+
                 string folderName = new DirectoryInfo(outputDir).Name; // Optional: specify a folder in Cloudinary
-                string publicId = GenerateRandomString(10); // Use image name without extension
+                string publicId = GenerateRandomString(12); // Use image name without extension
                 string uploadedUrl = imagePath;
                 if (upload)
                     uploadedUrl = await CloudinaryUploader.UploadImageToCloudinary(imagePath, folderName, publicId);
@@ -303,7 +303,7 @@ namespace Naheed_Scrapper_2
             public List<string> BadStrict { get; set; }
             public List<string> Good { get; set; }
             public List<string> GoodStrict { get; set; }
-            
+
         }
         private async void buttonAlfathaFromDisk_Click(object sender, EventArgs e)
         {
@@ -314,6 +314,25 @@ namespace Naheed_Scrapper_2
             if (combinedRoot?.Products == null || !combinedRoot.Products.Any()) { MessageBox.Show("No products found in the file.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
 
             List<Filters> filters = new List<Filters>();
+            filters.Add(new Filters
+            {
+                dir = "Frozen Fries",
+                Bad = new List<string>
+                {
+
+                },
+                BadStrict = new List<string>
+                {
+                    "Olive Oil"
+
+                },
+                Good = new List<string>
+                {
+                    "Frozen Fries",
+                    "Opa Fries",
+
+                }
+            });
             filters.Add(new Filters
             {
                 dir = "Fruits",
@@ -363,11 +382,11 @@ namespace Naheed_Scrapper_2
                 dir = "Salt",
                 Bad = new List<string>
                 {
-                    
+
                 },
                 BadStrict = new List<string>
                 {
-                    
+
                 },
                 Good = new List<string>
                 {
@@ -543,7 +562,7 @@ namespace Naheed_Scrapper_2
                 }
             });
 
-          
+
 
 
 
@@ -604,29 +623,11 @@ namespace Naheed_Scrapper_2
                     "Oil",
                 }
             });
-            filters.Add(new Filters
-            {
-                dir = " Frozen Fries",
-                Bad = new List<string>
-                {
 
-                },
-                BadStrict = new List<string>
-                {
-                    "Olive Oil"
-
-                },
-                Good = new List<string>
-                {
-                    "Frozen Fries",
-                    "Opa Fries",
-
-                }
-            });
 
             filters.Add(new Filters
             {
-                dir = " Frozen Chicken And Beef",
+                dir = "Frozen Chicken And Beef",
                 Bad = new List<string>
                 {
 
@@ -654,7 +655,7 @@ namespace Naheed_Scrapper_2
             foreach (Filters filter in filters)
             {
                 //Filters filter = filters[filters.Count-1];
-                String outputDir = Application.StartupPath +"Alfatha/"+ filter.dir;
+                String outputDir = Application.StartupPath + "Alfatha\\" + filter.dir;
                 removeAllFilesFromDir(outputDir);
                 if (!Directory.Exists(outputDir))
                     Directory.CreateDirectory(outputDir);
@@ -663,15 +664,15 @@ namespace Naheed_Scrapper_2
             }
         }
         async Task ApplyFiltersAsync(String outputDir, Filters filter, Root combinedRoot)
-        {   
+        {
             // Filter products
             var filteredProducts
                             = combinedRoot.Products.Where(p => p.Tags != null && p.Tags.Any(tag => filter.Good.Any(goodTag => tag.Equals(goodTag, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             filteredProducts = filteredProducts.Where(product =>
-                // Check if no tag matches the strict condition
+                    // Check if no tag matches the strict condition
                     !product.Tags.Any(tag => filter.BadStrict.Any(strict => strict == tag)) &&
-                // Check if no tag matches the substring condition
+                    // Check if no tag matches the substring condition
                     !product.Tags.Any(tag => filter.Bad.Any(substring => tag.Contains(substring, StringComparison.OrdinalIgnoreCase)))).ToList();
 
             for (int i = 0; i < filteredProducts.Count; i++)
@@ -719,58 +720,61 @@ namespace Naheed_Scrapper_2
         {
             int index = 0;
             List<AlfathaProduct> Products = new();
-            foreach(Product product in filteredProducts)
+            foreach (Product product in filteredProducts)
             {
                 String Name = product.Title.Trim();
                 String Unit = product.Variants[0].Option1.Trim();
                 if (Unit.Contains("Default Title"))
                 {
-                   if (Name.EndsWith(" PC"))
+                    if (Name.EndsWith(" PC"))
                     {
                         Name = Name.Replace(" PC", "");
                         Unit = "Piece";
                     }
                     else
-                    if (Name.Contains("/ 250g"))
+                     if (Name.Contains("/ 250g"))
                     {
                         Name = Name.Replace("/ 250g", "");
                         Unit = "250 G";
                     }
                     else
-                    if (Name.Contains(" 150g"))
+                     if (Name.Contains(" 150g"))
                     {
                         Name = Name.Replace("150g", "");
                         Unit = "150 G";
                     }
                     else
-                    if (Name.Contains("(1-Dozen)"))
+                     if (Name.Contains("(1-Dozen)"))
                     {
                         Name = Name.Replace("(1-Dozen)", "");
                         Unit = "1-Dozen";
                     }
                     else
-                    if (Name.Contains("(Bunch)"))
+                     if (Name.Contains("(Bunch)"))
                     {
                         Name = Name.Replace("(Bunch)", "");
                         Unit = "Bunch";
                     }
                     else
-                    if(Name.Contains("/pck 250g"))
+                     if (Name.Contains("/pck 250g"))
                     {
                         Name = Name.Replace("/pck 250g", "");
                         Unit = "Pack 250 G";
-                    }else
-                    if (Name.Contains("/pck"))
+                    }
+                    else
+                     if (Name.Contains("/pck"))
                     {
                         Name = Name.Replace("/pck", "");
                         Unit = "Pack";
-                    }else
-                    if(Name.Contains(" 200g"))
+                    }
+                    else
+                     if (Name.Contains(" 200g"))
                     {
                         Name = Name.Replace(" 200g", "");
                         Unit = "200 G";
-                    }else
-                    Console.WriteLine(Name);
+                    }
+                    else
+                        Console.WriteLine(Name);
                 }
                 Name = Name.Replace("&", "And");
                 Name = Name.Replace("%", " Percent");
@@ -780,7 +784,7 @@ namespace Naheed_Scrapper_2
                 String ImageSrc = index + "_" + Name + ".png";
 
                 Console.WriteLine($"{index,-10} {Name,-30} {Unit,-15} {Price,-10} {ImageSrc,-30}");
-                
+
                 Products.Add(new AlfathaProduct()
                 {
                     ProductId = -1,
@@ -792,13 +796,13 @@ namespace Naheed_Scrapper_2
 
                 index++;
             };
-            
+
             // Remove all products that have duplicate ProductName
             Products = Products.GroupBy(p => p.ProductName)
                                 .Select(g => g.First())
                                 .ToList().OrderBy(p => p.ProductName)
                                 .ToList();
-            
+
             for (index = 0; index < Products.Count; index++)
             {
                 AlfathaProduct product = Products[index];
@@ -807,10 +811,10 @@ namespace Naheed_Scrapper_2
                 Products[index].ImageSource = ImageSrc;
                 Products[index].ProductId = index;
             }
-            string json = System.Text.Json.JsonSerializer.Serialize(Products, new JsonSerializerOptions{WriteIndented = true  });
+            string json = System.Text.Json.JsonSerializer.Serialize(Products, new JsonSerializerOptions { WriteIndented = true });
 
             // Save the JSON to a file
-            File.WriteAllText(outputDir+"/0_"+ Category+".json", json);
+            File.WriteAllText(outputDir + "/0_" + Category + ".json", json);
 
             // Output to console (optional)
             Console.WriteLine(json);
@@ -833,6 +837,43 @@ namespace Naheed_Scrapper_2
             else
             {
                 Console.WriteLine("Directory does not exist.");
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string directoryPath = Application.StartupPath + "Alfatha\\";
+            if (!Directory.Exists(directoryPath))
+            {
+                Console.WriteLine("Directory does not exist.");
+                return;
+            }
+
+            // Define image file extensions
+            string[] imageExtensions = { "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp", "*.tiff", "*.webp" };
+
+            try
+            {
+                // Delete images in the current directory
+                foreach (string ext in imageExtensions)
+                {
+                    foreach (string file in Directory.GetFiles(directoryPath, ext, SearchOption.AllDirectories))
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                            Console.WriteLine($"Deleted: {file}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to delete {file}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing directory {directoryPath}: {ex.Message}");
             }
         }
     }
