@@ -48,7 +48,7 @@ namespace Naheed_Scrapper_2
                     return uploadResult.Url+""; // Return the URL of the uploaded image
                 }
                 else
-                {
+                {//0_Emborg French Fries Straight 1000Gm
                     Console.WriteLine($"Upload failed: {uploadResult.Error.Message}");
                     goto retryUpload;
                 }

@@ -204,6 +204,13 @@ namespace Naheed_Scrapper_2
 
             Console.WriteLine("Data scraped and saved to ShugarAndSalt.json");
         }
+        private static Random random = new Random();
+        public static string GenerateRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         private static async Task<string> DownloadImage(string outputDir, string imageName, string imageUrl, bool upload)
         {
             RetryImage:
@@ -217,7 +224,7 @@ namespace Naheed_Scrapper_2
 
                 
                 string folderName = new DirectoryInfo(outputDir).Name; // Optional: specify a folder in Cloudinary
-                string publicId = Path.GetFileNameWithoutExtension(imagePath); // Use image name without extension
+                string publicId = GenerateRandomString(10); // Use image name without extension
                 string uploadedUrl = imagePath;
                 if (upload)
                     uploadedUrl = await CloudinaryUploader.UploadImageToCloudinary(imagePath, folderName, publicId);
@@ -226,7 +233,8 @@ namespace Naheed_Scrapper_2
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to download image {imageUrl}: {ex.Message}");
-                Thread.Sleep(10000);
+                Thread.Sleep(100);
+                imageUrl = "https://img.freepik.com/free-vector/graphic-design-vector-illustration_24908-54512.jpg?t=st=1738901524~exp=1738905124~hmac=d48c4d3dd7d3de81ca326fe08f5ecc7a5818cd6c5f6d6ca96bca104321939141&w=1060";
                 goto RetryImage;
             }
         }
@@ -235,7 +243,7 @@ namespace Naheed_Scrapper_2
             // Base URL for Shopify API
             string baseUrl = "https://alfatah.pk/products.json";
             int limit = 249; // Maximum limit per request
-            int totalPages = 370; // Total number of pages
+            int totalPages = 366; // Total number of pages
             List<Product> allProducts = new List<Product>();
 
             // Add browser-like headers
@@ -421,7 +429,7 @@ namespace Naheed_Scrapper_2
 
             filters.Add(new Filters
             {
-                dir = "Butter & Margarine",
+                dir = "Butter And Margarine",
                 Bad = new List<string>
                 {
 
@@ -438,7 +446,7 @@ namespace Naheed_Scrapper_2
             });
             filters.Add(new Filters
             {
-                dir = "Cheese & Cream",
+                dir = "Cheese And Cream",
                 Bad = new List<string>
                 {
 
@@ -566,7 +574,6 @@ namespace Naheed_Scrapper_2
                 },
                 BadStrict = new List<string>
                 {
-
                     "Oil",
                     "Personal Care",
                     "Hair care",
@@ -619,7 +626,7 @@ namespace Naheed_Scrapper_2
 
             filters.Add(new Filters
             {
-                dir = " Frozen Chicken and Beef",
+                dir = " Frozen Chicken And Beef",
                 Bad = new List<string>
                 {
 
@@ -644,11 +651,9 @@ namespace Naheed_Scrapper_2
                     "Chef One",
                 }
             });
-
-
-            // foreach (Filters filter in filters)
+            foreach (Filters filter in filters)
             {
-                Filters filter = filters[filters.Count-1];
+                //Filters filter = filters[filters.Count-1];
                 String outputDir = Application.StartupPath +"Alfatha/"+ filter.dir;
                 removeAllFilesFromDir(outputDir);
                 if (!Directory.Exists(outputDir))
@@ -767,7 +772,8 @@ namespace Naheed_Scrapper_2
                     }else
                     Console.WriteLine(Name);
                 }
-                
+                Name = Name.Replace("&", "And");
+                Name = Name.Replace("%", " Percent");
                 Name = Regex.Replace(Name, @"\s*\(.*?\)", "").Trim();
 
                 String Price = product.Variants[0].Price.Trim();
@@ -797,7 +803,7 @@ namespace Naheed_Scrapper_2
             {
                 AlfathaProduct product = Products[index];
                 String ImageSrc = index + "_" + product.ProductName + ".png";
-                ImageSrc = await DownloadImage(outputDir, ImageSrc, product.ImageSource, false);
+                ImageSrc = await DownloadImage(outputDir, ImageSrc, product.ImageSource, true);
                 Products[index].ImageSource = ImageSrc;
                 Products[index].ProductId = index;
             }
