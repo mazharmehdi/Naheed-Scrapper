@@ -252,7 +252,8 @@ namespace Naheed_Scrapper_2
             client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
             client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
             // Loop through all pages
-            for (int page = 1; page <= totalPages; page++)
+            int productCount = 1;
+            for (int page = 1; productCount != 0; page++)
             {
                 try
                 {
@@ -270,6 +271,7 @@ namespace Naheed_Scrapper_2
                         {
                             allProducts.AddRange(root.Products); // Add products to the combined list
                             Console.WriteLine($"Page {page}: {root.Products.Count} products fetched.");
+                            productCount = root.Products.Count;
                         }
                         else
                         {
