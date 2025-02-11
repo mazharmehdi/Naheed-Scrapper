@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -289,13 +290,14 @@ namespace Naheed_Scrapper_2
             // Combine all products into a single JSON object
             Root combinedRoot = new Root { Products = allProducts };
             string combinedJson = JsonConvert.SerializeObject(combinedRoot, Formatting.Indented);
-
+            combinedJson = JObject.Parse(combinedJson).ToString(Formatting.None);
             // Save the JSON to a file
             string filePath = Application.StartupPath + "combined_products.json";
             await File.WriteAllTextAsync(filePath, combinedJson);
 
             Console.WriteLine($"Scraping completed. Combined JSON saved to {filePath}");
         }
+        
         public class Filters
         {
             public String dir;
